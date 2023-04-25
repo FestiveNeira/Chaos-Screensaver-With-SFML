@@ -1,82 +1,93 @@
 ﻿  main.cpp
 C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(18,43): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(172,59): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(172,50): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(180,25): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(181,26): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(182,25): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(183,26): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(184,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(185,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(197,12): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(210,55): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(210,24): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(221,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(221,16): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(241,26): warning C4244: 'argument': conversion from 'const double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(91,19): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(222,59): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(222,50): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(230,25): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(231,26): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(232,25): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(233,26): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(234,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(235,14): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(247,12): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(260,55): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(260,24): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(271,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(271,16): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(291,26): warning C4244: 'argument': conversion from 'const double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(241,22): warning C4244: 'argument': conversion from 'const double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(291,22): warning C4244: 'argument': conversion from 'const double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(248,39): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(298,39): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(249,39): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(299,39): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(250,35): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(300,35): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(251,35): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(301,35): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(279,26): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(329,26): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(280,26): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(330,26): warning C4244: '+=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(282,43): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(332,43): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(285,43): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(335,43): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(316,22): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(366,22): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(316,19): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(366,19): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(353,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(354,36): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(410,22): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(410,19): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(425,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\jdv09\source\repos\Chaos Screensaver With SFML\Chaos Screensaver With SFML\main.cpp(603,26): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   Generating code
-  21 of 298 functions ( 7.0%) were compiled, the rest were copied from previous compilation.
+  0 of 379 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
