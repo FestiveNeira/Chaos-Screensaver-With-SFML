@@ -20,7 +20,7 @@ static const bool usefloatconstants = true;			//Allow decimal constants in equat
 static const int pixelCount = 1000;					//Number of pixel paths
 static const int stepsPerFrame = 500;				//Number of iterations of pixels per frame (relates to trail length)
 static const int coloralpha = 16;					//Alpha value of colors
-static sf::Color color(200, 80, 110, coloralpha);	//Pixel color (use (0,0,0,x) for random or (r,g,b,16) for selected)
+static sf::Color color(0, 0, 0, coloralpha);		//Pixel color (use (0,0,0,x) for random or (r,g,b,16) for selected)
 static const sf::Vector2f ocenter = { 0.0, 0.0 };	//Starting center
 static const float oscale = 1;						//Starting scale
 
@@ -30,7 +30,7 @@ static const int equn = 18;
 static const int equnsc = 8;
 static const double stepInterval = 1e-5;
 static const double stepSmall = 1e-7;
-static const double tstart = -2.0;
+static const double tstart = -3.0;
 static const double tend = 3.0;
 
 //Global variables
@@ -52,6 +52,9 @@ static std::mt19937 randgen;
 static double speedmult = 1.0;
 static std::string seed;
 
+static std::vector<std::string> savedseeds;
+static int ssi = 0;
+
 sf::Vector2f center = { 0.0, 0.0 };
 sf::Vector2f size = { (float)maxWidth, (float)maxHeight };
 static float scale = 1;
@@ -63,11 +66,24 @@ static unsigned int seediter = 0;
 static unsigned int nextseediter = 0;
 static char base26[26] {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
-static void saveSeed() {
-
+static void loadSeedDataArray() {
+	std::ifstream file;
+	file.open("saved.txt");
+	if (file.is_open()) {
+		std::string line;
+		while (std::getline(file, line)) {
+			savedseeds.push_back(line);
+		}
+		file.close();
+	}
 }
-static void loadSeed(sf::Vector2i seedval) {
-
+static int getIndex(char b26[], int len, char c) {
+	for (int i = 0; i < len; i++) {
+		if (b26[i] == c) {
+			return i;
+		}
+	}
+	return -1;
 }
 //Encodes the seed data to a string (Format (uppercase chars)-(positive integer))
 static std::string encodeSeed() {
@@ -87,17 +103,34 @@ static std::string encodeSeed() {
 //Decodes a string (Format (uppercase chars)-(positive integer)) into seed data
 static sf::Vector2i decodeSeed(std::string s) {
 	int i = 0;
-	int newseed = 0;
-	int pow = 1;
+	unsigned int newseed = 0;
+	int pow = 0;
 	for (i = 0; i < s.length(); i++) {
 		if (s[i] == '-') {
 			break;
 		}
-		newseed += s[i] * std::pow(26, pow);
+		int ind = getIndex(base26, 26, s[i]);
+		newseed += ind * std::pow(26, pow);
 		pow++;
 	}
 	int val = std::stoi(s.substr(i + 1));
 	return sf::Vector2i(newseed, val);
+}
+
+static void loadSeed(std::string s) {
+	if (s != "") {
+		seediter = 0;
+		nextseediter = 0;
+		sf::Vector2i seedval = decodeSeed(s);
+		seedtime = seedval.x;
+		randgen.seed(seedval.x);
+		std::uniform_real_distribution<float> randfloat(-1, 3);
+		for (int i = 0; i < seedval.y; i++) {
+			float r = randfloat(randgen);
+			nextseediter++;
+		}
+		seediter = nextseediter;
+	}
 }
 
 //Generate random color (not my code)
@@ -147,35 +180,6 @@ static void randPosNegMultGen() {
 			sincos[i] = 0.0f;
 		}
 	}
-	//Testing Set
-	//*
-	math[0] = 0;
-	math[1] = 0;
-	math[2] = 0.52123534679412842;
-	math[3] = 0;
-	math[4] = -0.18084508180618286;
-	math[5] = -0.83450746536254883;
-	math[6] = 0;
-	math[7] = 0;
-	math[8] = 0;
-	math[9] = 0.093032360076904297;
-	math[10] = 0;
-	math[11] = -0.95438283681869507;
-	math[12] = 0;
-	math[13] = 0;
-	math[14] = 0;
-	math[15] = -0.65500193834304810;
-	math[16] = 0;
-	math[17] = 0.086771368980407715;
-	sincos[0] = 0;
-	sincos[1] = 0;
-	sincos[2] = 0;
-	sincos[3] = 0;
-	sincos[4] = 0;
-	sincos[5] = 0;
-	sincos[6] = 0;
-	sincos[7] = 0;
-	//*/
 }
 
 //resets zoom and translation at the start of a new simulation
@@ -315,41 +319,47 @@ static void draw(sf::RenderWindow& window, sf::Texture& screen) {
 }
 
 static sf::Vector2f calcNewCenter() {
+	bool move = true;
 	float minx = FLT_MAX;
 	float maxx = -FLT_MAX;
 	float miny = FLT_MAX;
 	float maxy = -FLT_MAX;
 	//Calculate max distance in each direction
 	for (int i = 0; i < screenhistory.size(); i++) {
+		if ((screenhistory[i].x == INFINITY) || (screenhistory[i].y == INFINITY)) {
+			move = false;
+		}
 		minx = std::fmin(minx, screenhistory[i].x - center.x);
 		maxx = std::fmax(maxx, screenhistory[i].x - center.x);
 		miny = std::fmin(miny, screenhistory[i].y - center.y);
 		maxy = std::fmax(maxy, screenhistory[i].y - center.y);
 	}
 
-	//Bound distances to screen size
-	minx = std::fmax(minx, -windowW);
-	maxx = std::fmin(maxx, windowW);
-	miny = std::fmax(miny, -windowH);
-	maxy = std::fmin(maxy, windowH);
+	if (move) {
+		//Bound distances to screen size
+		minx = std::fmax(minx, -windowW);
+		maxx = std::fmin(maxx, windowW);
+		miny = std::fmax(miny, -windowH);
+		maxy = std::fmin(maxy, windowH);
 
-	sf::Vector2f centernew((minx + maxx) / 2, (miny + maxy) / 2);
+		sf::Vector2f centernew((minx + maxx) / 2, (miny + maxy) / 2);
 
-	//Calculate the destination
-	sf::Vector2f dest((centernew.x - center.x) * 0.01, (centernew.y - center.y) * 0.01);
+		//Calculate the destination
+		sf::Vector2f dest((centernew.x - center.x) * 0.01, (centernew.y - center.y) * 0.01);
 
-	//create a moving global that is set to true when the screen wants to move more than 5 pixels and is set to false when it only wants to move 1
-	//only move when moving is true else leave it alone, this will simulate a sort of escape velocity in order to start moving
-	if (std::sqrt(std::pow(dest.x, 2) + std::pow(dest.y, 2)) >= 2.0) {
-		moving = true;
-	}
-	if (std::sqrt(std::pow(dest.x, 2) + std::pow(dest.y, 2)) < 1.0) {
-		moving = false;
-	}
+		//create a moving global that is set to true when the screen wants to move more than 5 pixels and is set to false when it only wants to move 1
+		//only move when moving is true else leave it alone, this will simulate a sort of escape velocity in order to start moving
+		if (std::sqrt(std::pow(dest.x, 2) + std::pow(dest.y, 2)) >= 5.0) {
+			moving = true;
+		}
+		if (std::sqrt(std::pow(dest.x, 2) + std::pow(dest.y, 2)) < 1.0) {
+			moving = false;
+		}
 
-	//Move 0.01 percent of the distance to the destination
-	if (moving) {
-		return sf::Vector2f(std::floor(center.x + dest.x), std::floor(center.y + dest.y));
+		//Move 0.01 percent of the distance to the destination
+		if (moving) {
+			return sf::Vector2f(std::floor(center.x + dest.x), std::floor(center.y + dest.y));
+		}
 	}
 	return center;
 }
@@ -375,6 +385,9 @@ int main()
 	seedtime = (unsigned int)time(0);
 	randgen.seed(seedtime);
 
+	//Load saved seeds
+	loadSeedDataArray();
+
 	//Create the window
 	sf::RenderWindow window;
 	createRenderWindow(window, fullscreen);
@@ -386,6 +399,7 @@ int main()
 	double t = tstart;
 	bool paused = false;
 	bool freeze = false;
+	bool faves = false;
 
 	//Setup the vertex array
 	for (int i = 0; i < pixels.size(); i++) {
@@ -397,6 +411,7 @@ int main()
 
 	//Generate initial equations
 	randPosNegMultGen();
+	seed = encodeSeed();
 
 	//Tracks mouse movement
 	int mousepos[] = { -1, -1 };
@@ -405,7 +420,7 @@ int main()
 		//Event System
 		sf::Event event;
 		while (window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed /*|| event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseWheelScrolled*/) {
+			if (event.type == sf::Event::Closed || event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseWheelScrolled) {
 				window.close();
 				break;
 			}
@@ -415,7 +430,7 @@ int main()
 					mousepos[1] = event.mouseMove.y;
 				}
 				else {
-					//window.close();
+					window.close();
 					break;
 				}
 			}
@@ -432,6 +447,7 @@ int main()
 				else if (keycode == sf::Keyboard::S) {
 					std::ofstream fout("saved.txt", std::ios::app);
 					fout << seed << std::endl;
+					savedseeds.push_back(seed);
 					std::cout << "Saved: " << seed << std::endl;
 				}
 				//-> = Next
@@ -440,9 +456,12 @@ int main()
 					randPosNegMultGen();
 					t = tstart;
 				}
-				//<- = Previous (unimplemented)
+				//<- = Restart Current
 				else if (keycode == sf::Keyboard::Left) {
-
+					t = tstart;
+				}
+				else if (keycode == sf::Keyboard::L) {
+					faves = !faves;
 				}
 				else {
 					//window.close();
@@ -473,8 +492,16 @@ int main()
 
 		//Restart with new equations after t > tend
 		if (t > tend) {
+			if (faves) {
+				loadSeed(savedseeds[ssi]);
+				ssi++;
+				if (ssi >= savedseeds.size()) {
+					ssi = 0;
+				}
+			}
 			resetView(window);
 			randPosNegMultGen();
+			seed = encodeSeed();
 			t = tstart;
 		}
 
