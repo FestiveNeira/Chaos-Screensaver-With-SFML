@@ -15,14 +15,14 @@
 
 //Editable Data
 static const bool fullscreen = true;				//Run in fullscreen?
-static const bool usesincos = false;				//Allow sin and cos in function generation?
-static const bool usefloatconstants = true;			//Allow decimal constants in equation generation?
 static const int pixelCount = 1000;					//Number of pixel paths
 static const int stepsPerFrame = 500;				//Number of iterations of pixels per frame (relates to trail length)
 static const int coloralpha = 16;					//Alpha value of colors
 static sf::Color color(0, 0, 0, coloralpha);		//Pixel color (use (0,0,0,x) for random or (r,g,b,16) for selected)
 static const sf::Vector2f ocenter = { 0.0, 0.0 };	//Starting center
-static const float oscale = 1;						//Starting scale
+static const int oscaleind = 4;						//Starting scale
+static bool usefloatconstants = true;				//Allow decimal constants in equation generation?
+static bool usesincos = true;						//Allow sin and cos in function generation?
 
 //Global constants
 static const int pixelArrCount = pixelCount * stepsPerFrame;
@@ -32,35 +32,30 @@ static const double stepInterval = 1e-5;
 static const double stepSmall = 1e-7;
 static const double tstart = -3.0;
 static const double tend = 3.0;
+static const float scalearr[]{ 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0 };
 
 //Global variables
 static double windowResW = 1920;
 static double windowResH = 1080;
 static double windowW = windowResW;
 static double windowH = windowResH;
-static int boundNegX, boundPosX, boundNegY, boundPosY;
-static int minWidth, minHeight, maxWidth, maxHeight;
 static bool allOffScreen = true;
+static double dynamicStepSpeed = stepInterval;
+static double speedmult = 1.0;
+static std::mt19937 randgen;
 static double math[equn];
 static double sincos[equnsc];
-static double dynamicStepSpeed = stepInterval;
 static std::vector<sf::Vector2f> history(pixelCount);
 static std::vector<sf::Vector2f> screenhistory(pixelCount);
 static std::vector<sf::Vertex> pixels(pixelArrCount);
+
 static bool moving = false;
-static std::mt19937 randgen;
-static double speedmult = 1.0;
-static std::string seed;
+sf::Vector2f center = { 0.0, 0.0 };
+static int scaleind = oscaleind;
 
 static std::vector<std::string> savedseeds;
 static int ssi = 0;
-
-sf::Vector2f center = { 0.0, 0.0 };
-sf::Vector2f size = { (float)maxWidth, (float)maxHeight };
-static float scale = 1;
-
-sf::Vector2f targetcenter = center;
-
+static std::string seed;
 static unsigned int seedtime;
 static unsigned int seediter = 0;
 static unsigned int nextseediter = 0;
@@ -184,7 +179,7 @@ static void randPosNegMultGen() {
 
 //resets zoom and translation at the start of a new simulation
 static void resetView(sf::RenderWindow& window) {
-	scale = oscale;
+	scaleind = oscaleind;
 	center.x = ocenter.x;
 	center.y = ocenter.y;
 }
@@ -222,27 +217,14 @@ static void createRenderWindow(sf::RenderWindow& window, bool full) {
 	view.setCenter(0, 0);
 	window.setView(view);
 
-	//Set barrier variables
-	boundPosX = windowResW;
-	boundNegX = -windowResW;
-	boundPosY = windowResH;
-	boundNegY = -windowResH;
-	maxWidth = boundPosX - boundNegX;
-	maxHeight = boundPosY - boundNegY;
-	minWidth = maxWidth / 8;
-	minHeight = maxHeight / 8;
-
 	//Initialize window variables
 	center = ocenter;
-	size = { (float)maxWidth, (float)maxHeight };
-	scale = oscale;
+	scaleind = oscaleind;
 }
 
 //Converts mathmatical positions of the pixels to screen coordinates
 static sf::Vector2f convertPixelToScreen(double x, double y) {
-	const float s = scale * float(windowResH / 2) * (1.0/8.0);
-	float t1 = center.x;
-	float t = center.y;
+	const float s = scalearr[scaleind] * float(windowResH / 2) * (1.0/8.0);
 	const float nx = (float(x) * s) - center.x;
 	const float ny = (float(y) * s) - center.y;
 	return sf::Vector2f(nx, ny);
@@ -319,40 +301,36 @@ static void draw(sf::RenderWindow& window, sf::Texture& screen) {
 }
 
 static sf::Vector2f calcNewCenter() {
+	bool allOnScreen = true;
 	bool move = true;
 	float minx = FLT_MAX;
 	float maxx = -FLT_MAX;
 	float miny = FLT_MAX;
 	float maxy = -FLT_MAX;
+	int ac = 0;
+	float ax = 0, ay = 0;
 	//Calculate max distance in each direction
 	for (int i = 0; i < screenhistory.size(); i++) {
-		if ((screenhistory[i].x == INFINITY) || (screenhistory[i].y == INFINITY)) {
+		if (screenhistory[i].x > windowResW * 10 || screenhistory[i].x < -windowResW * 10 || screenhistory[i].y > windowResH * 10 || screenhistory[i].y < -windowResH * 10) {
 			move = false;
 		}
-		minx = std::fmin(minx, screenhistory[i].x - center.x);
-		maxx = std::fmax(maxx, screenhistory[i].x - center.x);
-		miny = std::fmin(miny, screenhistory[i].y - center.y);
-		maxy = std::fmax(maxy, screenhistory[i].y - center.y);
+		ax += screenhistory[i].x;
+		ay += screenhistory[i].y;
 	}
 
 	if (move) {
-		//Bound distances to screen size
-		minx = std::fmax(minx, -windowW);
-		maxx = std::fmin(maxx, windowW);
-		miny = std::fmax(miny, -windowH);
-		maxy = std::fmin(maxy, windowH);
-
-		sf::Vector2f centernew((minx + maxx) / 2, (miny + maxy) / 2);
+		//Calculate new center
+		sf::Vector2f centernew(ax / screenhistory.size(), ay / screenhistory.size());
 
 		//Calculate the destination
 		sf::Vector2f dest((centernew.x - center.x) * 0.01, (centernew.y - center.y) * 0.01);
 
 		//create a moving global that is set to true when the screen wants to move more than 5 pixels and is set to false when it only wants to move 1
 		//only move when moving is true else leave it alone, this will simulate a sort of escape velocity in order to start moving
-		if (std::sqrt(std::pow(dest.x, 2) + std::pow(dest.y, 2)) >= 5.0) {
+		if (std::sqrt(std::pow(dest.x, 2) + std::pow(dest.y, 2)) >= 0.5) {
 			moving = true;
 		}
-		if (std::sqrt(std::pow(dest.x, 2) + std::pow(dest.y, 2)) < 1.0) {
+		else if (std::sqrt(std::pow(dest.x, 2) + std::pow(dest.y, 2)) < 0.1) {
 			moving = false;
 		}
 
@@ -378,6 +356,15 @@ static void setCenter(sf::RenderWindow& window, sf::Texture& screen, sf::Vector2
 	window.draw(sp);
 }
 
+static void colorPixels() {
+	for (int i = 0; i < pixels.size(); i++) {
+		if (color == sf::Color(0, 0, 0, 16) || color.a != coloralpha)
+			pixels[i].color = getRandColor(i % pixelCount);
+		else
+			pixels[i].color = color;
+	}
+}
+
 //Main program
 int main()
 {
@@ -397,17 +384,13 @@ int main()
 
 	//Simulation variables
 	double t = tstart;
+	bool canInteract = false;
 	bool paused = false;
 	bool freeze = false;
 	bool faves = false;
 
-	//Setup the vertex array
-	for (int i = 0; i < pixels.size(); i++) {
-		if (color == sf::Color(0, 0, 0, 16) || color.a != coloralpha)
-			pixels[i].color = getRandColor(i % pixelCount);
-		else
-			pixels[i].color = color;
-	}
+	//Color the vertex array
+	colorPixels();
 
 	//Generate initial equations
 	randPosNegMultGen();
@@ -420,16 +403,22 @@ int main()
 		//Event System
 		sf::Event event;
 		while (window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed || event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseWheelScrolled) {
+			if (event.type == sf::Event::Closed) {
 				window.close();
 				break;
+			}
+			else if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseWheelScrolled) {
+				if (!canInteract) {
+					window.close();
+					break;
+				}
 			}
 			else if (event.type == sf::Event::MouseMoved) {
 				if ((mousepos[0] < 0 && mousepos[1] < 0) || (event.mouseMove.x == mousepos[0] && event.mouseMove.y == mousepos[1])) {
 					mousepos[0] = event.mouseMove.x;
 					mousepos[1] = event.mouseMove.y;
 				}
-				else {
+				else if (!canInteract) {
 					window.close();
 					break;
 				}
@@ -440,31 +429,90 @@ int main()
 				if (keycode == sf::Keyboard::P) {
 					paused = !paused;
 				}
-				//S = Save seed
+				//F = Prevent Auto-Center (Freeze Camera)
 				else if (keycode == sf::Keyboard::F) {
 					freeze = !freeze;
 				}
+				//I = Allows interaction without closing
+				else if (keycode == sf::Keyboard::I) {
+					canInteract = !canInteract;
+				}
+				//S = Save seed
 				else if (keycode == sf::Keyboard::S) {
 					std::ofstream fout("saved.txt", std::ios::app);
 					fout << seed << std::endl;
 					savedseeds.push_back(seed);
 					std::cout << "Saved: " << seed << std::endl;
 				}
+				//T = Toggle Trig Functions
+				else if (keycode == sf::Keyboard::T) {
+					usesincos = !usesincos;
+				}
+				//C = Randomize Color
+				else if (keycode == sf::Keyboard::C) {
+					std::mt19937 rand((unsigned int)time(0));
+					std::uniform_int_distribution<> randint(0, 255);
+					color = sf::Color(randint(rand), randint(rand), randint(rand), coloralpha);
+					colorPixels();
+				}
+				//X = Reset Color To Random
+				else if (keycode == sf::Keyboard::X) {
+					color = sf::Color(0, 0, 0, coloralpha);
+					colorPixels();
+				}
+				//L = Load Saved Functions
+				else if (keycode == sf::Keyboard::L) {
+					faves = !faves;
+				}
 				//-> = Next
 				else if (keycode == sf::Keyboard::Right) {
+					if (faves) {
+						loadSeed(savedseeds[ssi]);
+						ssi++;
+						if (ssi >= savedseeds.size()) {
+							ssi = 0;
+						}
+					}
 					resetView(window);
 					randPosNegMultGen();
+					seed = encodeSeed();
 					t = tstart;
 				}
 				//<- = Restart Current
 				else if (keycode == sf::Keyboard::Left) {
 					t = tstart;
 				}
-				else if (keycode == sf::Keyboard::L) {
-					faves = !faves;
+				//^ = Zoom In
+				else if (keycode == sf::Keyboard::Up) {
+					if (scaleind < 8) {
+						scaleind++;
+						center = sf::Vector2f(center.x * (scalearr[scaleind] / scalearr[scaleind - 1]), center.y * (scalearr[scaleind] / scalearr[scaleind - 1]));
+						moving = false;
+					}
 				}
-				else {
-					//window.close();
+				//v = Zoom Out
+				else if (keycode == sf::Keyboard::Down) {
+					if (scaleind > 0) {
+						scaleind--;
+						center = sf::Vector2f(center.x * (scalearr[scaleind] / scalearr[scaleind + 1]), center.y * (scalearr[scaleind] / scalearr[scaleind + 1]));
+						moving = false;
+					}
+				}
+				//R = Reset Settings To Default
+				else if (keycode == sf::Keyboard::R) {
+					paused = false;
+					freeze = false;
+					usesincos = true;
+					color = sf::Color(0, 0, 0, coloralpha);
+					colorPixels();
+					faves == false;
+				}
+				//Nothing - Don't Close
+				else if (keycode == sf::Keyboard::LShift || keycode == sf::Keyboard::RShift || keycode == sf::Keyboard::Space) {
+				}
+				//Esc = Close
+				else if (keycode == sf::Keyboard::Escape || !canInteract) {
+					window.close();
 					break;
 				}
 			}
